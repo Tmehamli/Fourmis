@@ -3,17 +3,37 @@ import random as rd
 import numpy as np
 
 class Fourmis():
-    Q = rd.uniform(0,1) 
-    def __init__(self):
+    Q = 1
+    RHO = 0.25
+    # Q = rd.uniform(0,1) 
+    def __init__(self, g_d_p):
         self._chemin = []
-        self._alpha = rd.uniform(0,1) 
-        self._beta = rd.uniform(0,1)
+        self._alpha = 0.5#rd.uniform(0,1) 
+        self._beta = 0.30#rd.uniform(0,1)
+        self.g_d_p = copy.deepcopy(g_d_p)
+        self.phero_map = {}
+        for duo_v, _gdp in g_d_p.items():
+            self.phero_map[duo_v] = copy.deepcopy(_gdp[2])
+        self.start = None
+        self.last_pos = None
+    def update_gdp(self, g_d_p):
+        self.g_d_p = copy.deepcopy(g_d_p)
+        for duo_v, _gdp in g_d_p.items():
+            self.phero_map[duo_v] = copy.deepcopy(_gdp[2])
+    def random_start(self, _unvisted):
+        unvisted = _unvisted
+        i_rd_start = np.random.randint(0, len(unvisted))
+        self.start = copy.deepcopy(unvisted[i_rd_start])
+        self.last_pos = copy.deepcopy(self.start)
+        unvisted.pop(i_rd_start)
+        return unvisted
 
-    def ChoixDestination(self, start, Plan_gam_distance_phero):
-        # target = ('destination', 'proba')
+    def ChoixDestination(self):
+        # target = ('destination', 'foba')
         target = ('ville', 0)
         possible_target = {}
-        for duo_v, g_d_ph in Plan_gam_distance_phero.items():
+        start = self.last_pos
+        for duo_v, g_d_ph in self.g_d_p.items():
             if start in duo_v:
                 if (duo_v[0] == start and duo_v[1] not in self._chemin) or (duo_v[1] == start and duo_v[0] not in self._chemin):
                     possible_target[duo_v] = g_d_ph
@@ -27,7 +47,7 @@ class Fourmis():
                     t = duo_v[1]
                 target = (t, prob)
         self._chemin.append(target[0])
-        return target
+        self.last_pos = target[0]
 
     def init_p_den(self, duo_v, possible_target):
         p_den = 0
@@ -51,19 +71,13 @@ class Fourmis():
         p = p_num/p_den
         return p
 
-    def random_start(self, univisted):
-        i_rd_start = np.random.randint(0, len(univisted))
-        start = univisted[i_rd_start]
-        # univisted.pop(i_rd_start)
-        return start
-
-    def update_phero(self, Plan_gam_distance_phero):
+    def update_phero(self):
         path_duo_v = []
         duo_v = [self._chemin[0], '']
         for ville in self._chemin[1:]:
-            if (duo_v[0], ville) in Plan_gam_distance_phero:
+            if (duo_v[0], ville) in self.phero_map:
                 duo_v[1] = ville
-            elif (ville, duo_v[0]) in Plan_gam_distance_phero:
+            elif (ville, duo_v[0]) in self.phero_map:
                 temp = duo_v[0]
                 duo_v[0] = ville
                 duo_v[1] = temp
@@ -71,8 +85,9 @@ class Fourmis():
                 pass
             path_duo_v.append(copy.deepcopy(duo_v))
             duo_v = [ville, '']
-        print(path_duo_v)
-        Plan_gam_distance_phero[duo_v][2] += self.Q/len(self._chemin)
-
-    def AjouterChoix(self, destination):
-        self._chemin.append(destination)
+        path_duo_v = [tuple(duo_v) for duo_v in path_duo_v]
+        self.l_k = 0
+        for duo_v in path_duo_v:
+            self.l_k += self.g_d_p[duo_v][1]
+        for duo_v in path_duo_v:
+            self.phero_map[duo_v] += self.Q/self.l_k
