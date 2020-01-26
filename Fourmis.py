@@ -4,7 +4,7 @@ class Fourmi:
     def __init__(self, iden, stat_pos):
         self.identity = iden
         self.memory = []
-        self.start_position = stat_pos
+        self.start_pos = stat_pos
         self.t = 0
         # self.initialize()
 
