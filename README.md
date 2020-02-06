@@ -4,6 +4,7 @@
 [source](https://fr.wikipedia.org/wiki/Algorithme_de_colonies_de_fourmis))
 
 >le problème du voyageur de commerce est un problème d'optimisation qui, étant donné une liste de villes, et des distances entre toutes les paires de villes2, détermine un plus court chemin qui visite chaque ville une et une seule fois et qui termine dans la ville de départ.
+
 ![TSP_Deutschland_3.png](images/TSP_Deutschland_3.png)
 ([source](https://fr.wikipedia.org/wiki/Problème_du_voyageur_de_commerce))
 
