@@ -8,8 +8,6 @@ class Fourmi:
         self.current_pos = None
         self.l_k = None
         self.LK = None
-        # self.t = 0
-        # self.initialize()
 
     def initialize(self):
         self.l_k = 0
@@ -33,6 +31,8 @@ class Fourmi:
                         # for each destination
                         if j != i_v:
                             den_to_add = m.pow(phero_map[i_v, j], alpha) * m.pow(1/d, beta)
+                            gama = m.pow(np.random.random(),0.3)
+                            den_to_add += gama
                             if j == j_v:
                                 num = den_to_add
                             den += den_to_add
@@ -41,10 +41,7 @@ class Fourmi:
         # ending the path with start pos
         else:
             p[self.start_pos] = 1
-        print(self.identity)
-        print(dist_m)
         choice = np.argmax(p)
-        print([i_v, choice])
         self.l_k += dist_m[i_v, choice]
         self.LK.append(self.l_k)
         return choice
@@ -52,5 +49,4 @@ class Fourmi:
     def apply_choice(self, new_pos):
         self.current_pos = new_pos
         self.memory.append(new_pos)
-        pass
 
